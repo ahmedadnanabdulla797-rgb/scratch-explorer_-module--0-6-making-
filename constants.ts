@@ -91,14 +91,14 @@ export const FULL_CURRICULUM: Module[] = [
       }
     ]
   },
-  {
+{
     id: 'module-5',
-    title: 'Module 5: Game Master',
+    title: 'Module 5: Cat Home',
     lessons: [
       {
         id: '5.1',
-        title: 'Level 1: Big Boss Maze',
-        description: 'Help the cat find the home! 🏠',
+        title: 'Level 1: Go Home! 🏠',
+        description: 'Click the arrows to help the cat! 🐱',
         type: 'project',
         status: LessonStatus.AVAILABLE,
         stars: 800,
@@ -106,8 +106,8 @@ export const FULL_CURRICULUM: Module[] = [
       },
       {
         id: '5.2',
-        title: 'Level 2: Win Quiz',
-        description: 'Pick the happy cat! 🐱',
+        title: 'Level 2: Happy Quiz 🐱',
+        description: 'Find the cat! 🕵️‍♂️',
         type: 'quiz',
         status: LessonStatus.AVAILABLE,
         stars: 200,
@@ -117,12 +117,12 @@ export const FULL_CURRICULUM: Module[] = [
   },
   {
     id: 'module-6',
-    title: 'Module 6: Super Creator',
+    title: 'Module 6: Party Time',
     lessons: [
       {
         id: '6.1',
-        title: 'Level 1: Magic Party',
-        description: 'Make everything move at once! 🎉',
+        title: 'Level 1: Dance Party! 🎉',
+        description: 'Click everything to make it move! 💃',
         type: 'project',
         status: LessonStatus.AVAILABLE,
         stars: 1000,
@@ -130,8 +130,8 @@ export const FULL_CURRICULUM: Module[] = [
       },
       {
         id: '6.2',
-        title: 'Level 2: Master Gift',
-        description: 'You are the best coder! 👑',
+        title: 'Level 2: Super Star! 👑',
+        description: 'You did it! Click the crown! 👑',
         type: 'quiz',
         status: LessonStatus.AVAILABLE,
         stars: 500,
