@@ -27,25 +27,21 @@ const App: React.FC = () => {
 
   const handleLevelUp = () => {
     if (!completed.has(currentLevel.id)) {
-      // 1. Immediate UI feedback (Stars and Sound)
       sounds.playFanfare();
       setStars(prev => prev + currentLevel.stars);
       setCompleted(prev => new Set(prev).add(currentLevel.id));
       
-      // 2. Delayed visual celebration to prevent frame drops
       requestAnimationFrame(() => {
         setShowConfetti(true);
         setPulseStars(true);
       });
 
-      // 3. Auto-clear effects
       setTimeout(() => setShowConfetti(false), 4000);
       setTimeout(() => setPulseStars(false), 1000);
     }
   };
 
   const nextLevel = () => {
-    // Small delay before switching levels prevents the "pop" lag
     setTimeout(() => {
       sounds.playPop();
       if (currentLevelIdx < currentModule.lessons.length - 1) {
@@ -83,11 +79,9 @@ const App: React.FC = () => {
     setTimeout(() => setShowConfetti(false), 3000);
   };
 
- // Skip text-only intro levels by automatically moving to the next
   useEffect(() => {
     if (currentLevel.type === 'content') {
       handleLevelUp();
-      // This moves to the next level in 0.1 seconds (very fast!)
       const timer = setTimeout(() => {
         nextLevel();
       }, 100); 
@@ -100,73 +94,50 @@ const App: React.FC = () => {
       {(showConfetti || isQuestFinished) && <Confetti />}
       {showWelcome && <WelcomeModal onClose={() => { sounds.playPop(); setShowWelcome(false); }} />}
 
-{isQuestFinished && (
-  <div className="fixed inset-0 z-[300] bg-indigo-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-500 overflow-hidden">
-    {/* Updated to match the "Sprite Quest!" welcome modal dimensions */}
-    <div className="bg-white rounded-[3rem] p-10 w-[95%] max-w-[600px] flex flex-col items-center justify-center text-center shadow-[0_20px_50px_rgba(0,0,0,0.3)] border-[6px] border-yellow-400 relative animate-in zoom-in duration-500">
-      
-      {/* Cat Icon to match welcome style */}
-      <div className="text-[80px] mb-4 drop-shadow-md leading-none">🐱</div>
-      
-      {/* Title Styled like first interface */}
-      <h2 className="text-4xl font-black text-indigo-900 mb-2 font-kids uppercase tracking-tight">
-        Sprite Master!
-      </h2>
-      
-      <p className="text-indigo-600 font-bold mb-6 text-lg">You built amazing games! 🎮</p>
-      
-      {/* Stats Summary */}
-      <div className="w-full flex flex-col gap-3 mb-8">
-        <div className="bg-yellow-50 p-4 rounded-2xl border-2 border-yellow-100 flex items-center justify-between">
-          <span className="font-black text-yellow-700">⭐ STARS EARNED:</span>
-          <span className="text-2xl font-black text-yellow-600">{stars}</span>
+      {isQuestFinished && (
+        <div className="fixed inset-0 z-[300] bg-indigo-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-500 overflow-hidden">
+          <div className="bg-white rounded-[3rem] p-10 w-[95%] max-w-[600px] flex flex-col items-center justify-center text-center shadow-[0_20px_50px_rgba(0,0,0,0.3)] border-[6px] border-yellow-400 relative animate-in zoom-in duration-500">
+            <div className="text-[80px] mb-4 drop-shadow-md leading-none">🐱</div>
+            <h2 className="text-4xl font-black text-indigo-900 mb-2 font-kids uppercase tracking-tight">
+              Sprite Master!
+            </h2>
+            <p className="text-indigo-600 font-bold mb-6 text-lg">You built amazing games! 🎮</p>
+            <div className="w-full flex flex-col gap-3 mb-8">
+              <div className="bg-yellow-50 p-4 rounded-2xl border-2 border-yellow-100 flex items-center justify-between">
+                <span className="font-black text-yellow-700">⭐ STARS EARNED:</span>
+                <span className="text-2xl font-black text-yellow-600">{stars}</span>
+              </div>
+              <div className="bg-emerald-50 p-4 rounded-2xl border-2 border-emerald-100 flex items-center justify-between">
+                <span className="font-black text-emerald-700">✅ LEVELS DONE:</span>
+                <span className="text-2xl font-black text-emerald-600">{completed.size}</span>
+              </div>
+            </div>
+            <button 
+              onClick={restartQuest} 
+              className="w-full bg-[#22c55e] hover:bg-[#16a34a] text-white py-5 rounded-[1.5rem] shadow-[0_8px_0_0_#15803d] transition-all hover:translate-y-[2px] hover:shadow-[0_4px_0_0_#15803d] flex items-center justify-center gap-3 font-kids active:scale-95"
+            >
+              <span className="text-2xl font-black uppercase tracking-wide">PLAY AGAIN!</span>
+              <span className="text-2xl">🚀</span>
+            </button>
+          </div>
         </div>
-        <div className="bg-emerald-50 p-4 rounded-2xl border-2 border-emerald-100 flex items-center justify-between">
-          <span className="font-black text-emerald-700">✅ LEVELS DONE:</span>
-          <span className="text-2xl font-black text-emerald-600">{completed.size}</span>
+      )}
+
+      <header className="bg-white/10 backdrop-blur-xl py-2 px-6 border-b border-white/20 shadow-lg z-20 shrink-0">
+        <div className="max-w-[1100px] mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2.5">
+              <img src={logo} alt="Million Coders Logo" className="h-8 w-auto object-contain brightness-0 invert" /> 
+              <div className="h-6 w-[2px] bg-white/20 mx-1"></div>
+              <h1 className="text-sm font-black text-white uppercase tracking-tighter font-kids">SPRITE QUEST</h1>
+            </div>
+          </div>
+          <div className={`bg-white/90 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-2 shadow-sm border border-white transition-all duration-300 ${pulseStars ? 'scale-110' : ''}`}>
+            <span className="text-base">⭐</span>
+            <span className="text-base font-black text-indigo-600 tabular-nums">{stars}</span>
+          </div>
         </div>
-      </div>
-
-      {/* Start Over Button Styled like the "START QUEST!" button */}
-      <button 
-        onClick={restartQuest} 
-        className="w-full bg-[#22c55e] hover:bg-[#16a34a] text-white py-5 rounded-[1.5rem] shadow-[0_8px_0_0_#15803d] transition-all hover:translate-y-[2px] hover:shadow-[0_4px_0_0_#15803d] flex items-center justify-center gap-3 font-kids active:scale-95"
-      >
-        <span className="text-2xl font-black uppercase tracking-wide">PLAY AGAIN!</span>
-        <span className="text-2xl">🚀</span>
-      </button>
-    </div>
-  </div>
-)}
-
-     <header className="bg-white/10 backdrop-blur-xl py-2 px-6 border-b border-white/20 shadow-lg z-20 shrink-0">
-  <div className="max-w-[1100px] mx-auto flex items-center justify-between">
-    <div className="flex items-center gap-4">
-      <div className="flex items-center gap-2.5">
-        {/* LOGO */}
-        <img 
-          src={logo} 
-          alt="Million Coders Logo" 
-          className="h-8 w-auto object-contain brightness-0 invert" 
-        /> 
-        
-        {/* VERTICAL LINE (Moved here next to the logo) */}
-        <div className="h-6 w-[2px] bg-white/20 mx-1"></div>
-
-        {/* TITLE */}
-        <h1 className="text-sm font-black text-white uppercase tracking-tighter font-kids">
-          SPRITE QUEST 
-        </h1>
-      </div>
-    </div>
-
-    {/* STAR COUNTER */}
-    <div className={`bg-white/90 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-2 shadow-sm border border-white transition-all duration-300 ${pulseStars ? 'scale-110' : ''}`}>
-      <span className="text-base">⭐</span>
-      <span className="text-base font-black text-indigo-600 tabular-nums">{stars}</span>
-    </div>
-  </div>
-</header>
+      </header>
 
       <main className="flex-1 w-full max-w-[1100px] mx-auto grid grid-cols-12 gap-4 p-4 lg:p-6 items-stretch overflow-hidden">
         <aside className="col-span-12 lg:col-span-3 flex flex-col gap-4 overflow-hidden">
@@ -176,7 +147,6 @@ const App: React.FC = () => {
               {currentModule.lessons.map((level, idx) => {
                 const isCurrent = currentLevelIdx === idx;
                 const isDone = completed.has(level.id);
-                // Extracting name from "Level X: Name"
                 const levelName = level.title.split(': ')[1] || level.title;
                 return (
                   <button key={level.id} onClick={() => { sounds.playPop(); setCurrentLevelIdx(idx); }} className={`w-full p-2.5 rounded-xl transition-all border-b-2 flex items-center gap-2.5 ${isCurrent ? 'bg-yellow-400 border-yellow-600 shadow-md translate-y-[-1px]' : 'bg-white/10 border-white/5 text-white hover:bg-white/20'}`}>
@@ -210,7 +180,7 @@ const App: React.FC = () => {
                  <LoopGame onWin={handleLevelUp} isCompleted={completed.has(currentLevel.id)} onNext={nextLevel} />
               ) : currentLevel.content === 'CONDITION_GAME_EASY' ? (
                  <ConditionGame onWin={handleLevelUp} isCompleted={completed.has(currentLevel.id)} onNext={nextLevel} />
-              ) : currentLevel.content === 'LOGIC_GAME_EASY' ? (
+              ) : (currentLevel.content === 'LOGIC_GAME_EASY' || currentLevel.content === 'MAZE_GAME_EASY') ? (
                  <LogicWorkshop mode="LOGIC" onWin={handleLevelUp} isCompleted={completed.has(currentLevel.id)} onNext={nextLevel} />
               ) : (currentLevel.content === 'FINAL_GAME_EASY' || currentLevel.content === 'FINAL_GAME_EXPERT') ? (
                  <LogicWorkshop mode="FINAL" onWin={handleLevelUp} isCompleted={completed.has(currentLevel.id)} onNext={nextLevel} />
@@ -218,7 +188,13 @@ const App: React.FC = () => {
                  <LogicWorkshop mode="PLAYGROUND" onWin={handleLevelUp} isCompleted={completed.has(currentLevel.id)} onNext={nextLevel} />
               ) : currentLevel.content.includes('QUIZ') ? (
                  <QuizComponent 
-                    questionsType={currentLevel.content === 'QUIZ_MODULE_3' ? 'loops' : currentLevel.content === 'QUIZ_COORDINATES' ? 'coordinates' : currentLevel.content.includes('CONDITIONS') ? 'conditions' : 'events'} 
+                    questionsType={
+                      currentLevel.content === 'QUIZ_MODULE_5' ? 'advanced' : 
+                      currentLevel.content === 'QUIZ_MODULE_6' ? 'master' :
+                      currentLevel.content === 'QUIZ_MODULE_3' ? 'loops' : 
+                      currentLevel.content === 'QUIZ_COORDINATES' ? 'coordinates' : 
+                      currentLevel.content.includes('CONDITIONS') ? 'conditions' : 'events'
+                    } 
                     onComplete={handleLevelUp} 
                     onNext={nextLevel} 
                  />
