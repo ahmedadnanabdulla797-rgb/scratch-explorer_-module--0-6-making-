@@ -89,7 +89,9 @@ export const FULL_CURRICULUM: Module[] = [
         stars: 150,
         content: 'QUIZ_CONDITIONS'
       }
-      {
+    ]
+  },
+  {
     id: 'module-5',
     title: 'Module 5: Game Master',
     lessons: [
