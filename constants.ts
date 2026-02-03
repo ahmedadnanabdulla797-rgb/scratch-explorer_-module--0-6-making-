@@ -89,6 +89,52 @@ export const FULL_CURRICULUM: Module[] = [
         stars: 150,
         content: 'QUIZ_CONDITIONS'
       }
+      {
+    id: 'module-5',
+    title: 'Module 5: Game Master',
+    lessons: [
+      {
+        id: '5.1',
+        title: 'Level 1: Big Boss Maze',
+        description: 'Help the cat find the home! 🏠',
+        type: 'project',
+        status: LessonStatus.AVAILABLE,
+        stars: 800,
+        content: 'MAZE_GAME_EASY'
+      },
+      {
+        id: '5.2',
+        title: 'Level 2: Win Quiz',
+        description: 'Pick the happy cat! 🐱',
+        type: 'quiz',
+        status: LessonStatus.AVAILABLE,
+        stars: 200,
+        content: 'QUIZ_MODULE_5'
+      }
+    ]
+  },
+  {
+    id: 'module-6',
+    title: 'Module 6: Super Creator',
+    lessons: [
+      {
+        id: '6.1',
+        title: 'Level 1: Magic Party',
+        description: 'Make everything move at once! 🎉',
+        type: 'project',
+        status: LessonStatus.AVAILABLE,
+        stars: 1000,
+        content: 'PLAYGROUND_EASY'
+      },
+      {
+        id: '6.2',
+        title: 'Level 2: Master Gift',
+        description: 'You are the best coder! 👑',
+        type: 'quiz',
+        status: LessonStatus.AVAILABLE,
+        stars: 500,
+        content: 'QUIZ_MODULE_6'
+      }
     ]
   }
 ];
