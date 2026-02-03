@@ -24,8 +24,28 @@ const CONDITION_QUESTIONS = [
   { q: "The 'IF' block is the Cat's _______?", a: ["Tail", "Brain", "Feet"], correct: 1, hint: "The IF block helps the cat make smart choices!" }
 ];
 
-export const QuizComponent: React.FC<{ onComplete: () => void, onNext: () => void, questionsType?: 'loops' | 'events' | 'conditions' | 'coordinates' }> = ({ onComplete, onNext, questionsType = 'loops' }) => {
-  const QUESTIONS = questionsType === 'events' ? EVENT_QUESTIONS : questionsType === 'conditions' ? CONDITION_QUESTIONS : questionsType === 'coordinates' ? COORDINATE_QUESTIONS : LOOP_QUESTIONS;
+// NEW: Simple questions for Module 5 (Advanced but easy to understand)
+const ADVANCED_QUESTIONS = [
+  { q: "How do we win a Maze Game?", a: ["🏃 Get to the Goal", "🧱 Touch the Wall", "😴 Stay Still"], correct: 0, hint: "Look for the finish line! 🏁" },
+  { q: "What does a 'Broadcast' do?", a: ["🔇 Shushes", "📢 Sends a Message", "💤 Sleeps"], correct: 1, hint: "It's like calling your friend on the phone! ☎️" }
+];
+
+// NEW: Final Master questions for Module 6
+const MASTER_QUESTIONS = [
+  { q: "Who is the Master Coder?", a: ["🤖 Robot", "🐱 Cat", "👤 YOU!"], correct: 2, hint: "You built all these amazing games!" },
+  { q: "What can you make with code?", a: ["🎨 Art", "🕹️ Games", "🌈 EVERYTHING!"], correct: 2, hint: "Coding is like magic!" }
+];
+
+export const QuizComponent: React.FC<{ onComplete: () => void, onNext: () => void, questionsType?: 'loops' | 'events' | 'conditions' | 'coordinates' | 'advanced' | 'master' }> = ({ onComplete, onNext, questionsType = 'loops' }) => {
+  // Logic updated to include advanced and master types
+  const QUESTIONS = 
+    questionsType === 'events' ? EVENT_QUESTIONS : 
+    questionsType === 'conditions' ? CONDITION_QUESTIONS : 
+    questionsType === 'coordinates' ? COORDINATE_QUESTIONS : 
+    questionsType === 'advanced' ? ADVANCED_QUESTIONS : 
+    questionsType === 'master' ? MASTER_QUESTIONS : 
+    LOOP_QUESTIONS;
+
   const [curr, setCurr] = useState(0);
   const [score, setScore] = useState(0);
   const [done, setDone] = useState(false);
@@ -36,13 +56,13 @@ export const QuizComponent: React.FC<{ onComplete: () => void, onNext: () => voi
       sounds.playCollect();
       setScore(s => s + 1);
     } else {
-      sounds.playPop(); // Subtle fail sound
+      sounds.playPop(); 
     }
     setShowHint(false);
     if (curr < QUESTIONS.length - 1) setCurr(c => c + 1);
     else {
       setDone(true);
-      onComplete(); // Mark as finished when all questions answered
+      onComplete(); 
     }
   };
 
