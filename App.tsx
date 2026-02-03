@@ -171,37 +171,37 @@ const App: React.FC = () => {
                <button onClick={nextLevel} className="w-9 h-9 bg-white rounded-lg flex items-center justify-center text-base shadow-sm border border-indigo-100">➡️</button>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-5 pb-5 flex flex-col min-h-0 custom-scrollbar">
-              {currentLevel.content === 'COORDINATE_GAME' ? (
-                <SpriteSimulator onWin={handleLevelUp} isCompleted={completed.has(currentLevel.id)} onNext={nextLevel} />
-              ) : currentLevel.content === 'EVENTS_GAME' ? (
-                 <EventsGame onWin={handleLevelUp} isCompleted={completed.has(currentLevel.id)} onNext={nextLevel} />
-              ) : currentLevel.content === 'LOOP_GAME_EASY' ? (
-                 <LoopGame onWin={handleLevelUp} isCompleted={completed.has(currentLevel.id)} onNext={nextLevel} />
-              ) : currentLevel.content === 'CONDITION_GAME_EASY' ? (
-                 <ConditionGame onWin={handleLevelUp} isCompleted={completed.has(currentLevel.id)} onNext={nextLevel} />
-              ) : (currentLevel.content === 'LOGIC_GAME_EASY' || currentLevel.content === 'MAZE_GAME_EASY') ? (
-                 <LogicWorkshop mode="LOGIC" onWin={handleLevelUp} isCompleted={completed.has(currentLevel.id)} onNext={nextLevel} />
-              ) : (currentLevel.content === 'FINAL_GAME_EASY' || currentLevel.content === 'FINAL_GAME_EXPERT') ? (
-                 <LogicWorkshop mode="FINAL" onWin={handleLevelUp} isCompleted={completed.has(currentLevel.id)} onNext={nextLevel} />
-              ) : currentLevel.content === 'PLAYGROUND_EASY' ? (
-                 <LogicWorkshop mode="PLAYGROUND" onWin={handleLevelUp} isCompleted={completed.has(currentLevel.id)} onNext={nextLevel} />
-              ) : currentLevel.content.includes('QUIZ') ? (
-                 <QuizComponent 
-                    questionsType={
-                      currentLevel.content === 'QUIZ_MODULE_5' ? 'advanced' : 
-                      currentLevel.content === 'QUIZ_MODULE_6' ? 'master' :
-                      currentLevel.content === 'QUIZ_MODULE_3' ? 'loops' : 
-                      currentLevel.content === 'QUIZ_COORDINATES' ? 'coordinates' : 
-                      currentLevel.content.includes('CONDITIONS') ? 'conditions' : 'events'
-                    } 
-                    onComplete={handleLevelUp} 
-                    onNext={nextLevel} 
-                 />
-              ) : (
-               <SpriteSimulator onWin={handleLevelUp} isCompleted={completed.has(currentLevel.id)} onNext={nextLevel} />
-              )}
-            </div>
+          <div className="flex-1 overflow-y-auto px-5 pb-5 flex flex-col min-h-0 custom-scrollbar">
+  {currentLevel.content === 'COORDINATE_GAME' ? (
+    <SpriteSimulator onWin={handleLevelUp} isCompleted={completed.has(currentLevel.id)} onNext={nextLevel} />
+  ) : currentLevel.content === 'EVENTS_GAME' ? (
+     <EventsGame onWin={handleLevelUp} isCompleted={completed.has(currentLevel.id)} onNext={nextLevel} />
+  ) : currentLevel.content === 'LOOP_GAME_EASY' ? (
+     <LoopGame onWin={handleLevelUp} isCompleted={completed.has(currentLevel.id)} onNext={nextLevel} />
+  ) : currentLevel.content === 'CONDITION_GAME_EASY' ? (
+     <ConditionGame onWin={handleLevelUp} isCompleted={completed.has(currentLevel.id)} onNext={nextLevel} />
+  ) : (currentLevel.content === 'LOGIC_GAME_EASY' || currentLevel.content === 'MAZE_GAME_EASY') ? (
+     <LogicWorkshop mode="LOGIC" onWin={handleLevelUp} isCompleted={completed.has(currentLevel.id)} onNext={nextLevel} />
+  ) : (currentLevel.content === 'FINAL_GAME_EASY' || currentLevel.content === 'FINAL_GAME_EXPERT') ? (
+     <LogicWorkshop mode="FINAL" onWin={handleLevelUp} isCompleted={completed.has(currentLevel.id)} onNext={nextLevel} />
+  ) : currentLevel.content === 'PLAYGROUND_EASY' ? (
+     <LogicWorkshop mode="PLAYGROUND" onWin={handleLevelUp} isCompleted={completed.has(currentLevel.id)} onNext={nextLevel} />
+  ) : currentLevel.content.includes('QUIZ') ? (
+     <QuizComponent 
+        questionsType={
+          currentLevel.content === 'QUIZ_MODULE_5' ? 'advanced' : 
+          currentLevel.content === 'QUIZ_MODULE_6' ? 'master' :
+          currentLevel.content === 'QUIZ_MODULE_3' ? 'loops' : 
+          currentLevel.content === 'QUIZ_COORDINATES' ? 'coordinates' : 
+          currentLevel.content.includes('CONDITIONS') ? 'conditions' : 'events'
+        } 
+        onComplete={handleLevelUp} 
+        onNext={nextLevel} 
+     />
+  ) : (
+    <SpriteSimulator onWin={handleLevelUp} isCompleted={completed.has(currentLevel.id)} onNext={nextLevel} />
+  )}
+</div>
           </div>
         </section>
       </main>
