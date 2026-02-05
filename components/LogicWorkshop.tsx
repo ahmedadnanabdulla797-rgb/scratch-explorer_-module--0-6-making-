@@ -20,8 +20,7 @@ export const LogicWorkshop: React.FC<{ mode: WorkshopMode, onWin?: () => void, i
   useEffect(() => { setup(); }, [setup]);
 
   const dropBlock = () => {
-    // Only stop dropping if we won in Module 5. 
-    // In Module 6 (Creative), let them keep dropping until the win screen pops.
+    // Stop dropping if we already won (Logic mode)
     if (isWin && !isCreative) return;
 
     sounds.playPop();
@@ -32,22 +31,17 @@ export const LogicWorkshop: React.FC<{ mode: WorkshopMode, onWin?: () => void, i
       emoji: blockEmojis[blocks.length % blockEmojis.length],
     };
 
-    setBlocks(prev => {
-      const nextBlocks = [...prev, newBlock];
+    // We calculate the count immediately to solve the "lag"
+    const nextCount = blocks.length + 1;
+    setBlocks(prev => [...prev, newBlock]);
 
-      // FIXED WIN LOGIC:
-      // Both Module 5 (Stack the Toys) and Module 6 (Music Maker) 
-      // will now trigger the "Amazing!" win screen at 5 blocks.
-      if (nextBlocks.length >= 5) {
-        setTimeout(() => {
-          setIsWin(true);
-          sounds.playSuccess();
-          if (onWin) onWin();
-        }, 500);
-      }
-
-      return nextBlocks;
-    });
+    // INSTANT WIN CHECK: No setTimeout, no delay. 
+    // Triggers exactly when the 5th block is "caught"
+    if (nextCount >= 5) {
+      setIsWin(true);
+      sounds.playSuccess();
+      if (onWin) onWin();
+    }
   };
 
   return (
