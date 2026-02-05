@@ -1,7 +1,52 @@
-return (
-    <div className={`h-full flex flex-col font-['Fredoka'] overflow-hidden transition-colors duration-500 ${isCreative ? 'bg-orange-50' : 'bg-sky-100'}`}>
+import React, { useState, useEffect, useCallback } from 'react';
+import { sounds } from '../services/sounds';
+
+type WorkshopMode = 'LOOP' | 'CONDITION' | 'LOGIC' | 'FINAL' | 'PLAYGROUND';
+
+export const LogicWorkshop: React.FC<{ mode: WorkshopMode, onWin?: () => void, isCompleted?: boolean, onNext?: () => void }> = ({ mode, onWin, isCompleted, onNext }) => {
+  const [blocks, setBlocks] = useState<{ id: number; color: string; emoji: string }[]>([]);
+  const [isWin, setIsWin] = useState(false);
+  
+  // Logic to determine if we are in Module 6 (Creative/Playground)
+  const isCreative = mode === 'PLAYGROUND' || mode === 'FINAL';
+
+  const blockEmojis = ['📦', '🎁', '🧸', '🎨', '🧱', '🍭'];
+  const colors = ['bg-red-400', 'bg-blue-400', 'bg-yellow-400', 'bg-green-400', 'bg-purple-400'];
+
+  const setup = useCallback(() => {
+    setBlocks([]);
+    setIsWin(false);
+  }, []);
+
+  useEffect(() => { setup(); }, [setup]);
+
+  const dropBlock = () => {
+    if (isWin && !isCreative) return;
+
+    sounds.playPop();
+    
+    const newBlock = {
+      id: Date.now(),
+      color: colors[blocks.length % colors.length],
+      emoji: blockEmojis[blocks.length % blockEmojis.length],
+    };
+
+    setBlocks(prev => [...prev, newBlock]);
+
+    // Module 5 Logic: Stack 5 blocks to trigger the Win (Star)
+    if (!isCreative && blocks.length >= 4) {
+      setTimeout(() => {
+        setIsWin(true);
+        sounds.playSuccess();
+        if (onWin) onWin();
+      }, 500);
+    }
+  };
+
+  return (
+    <div className={`h-full w-full flex flex-col font-['Fredoka'] overflow-hidden transition-colors duration-500 ${isCreative ? 'bg-orange-50' : 'bg-sky-100'}`}>
       
-      {/* Header - Made slightly thinner */}
+      {/* Header - Thinner to save space */}
       <div className="bg-[#1e1b4b] text-white px-4 py-2 flex items-center justify-between border-b-4 border-black/20 shrink-0">
         <h2 className="text-[10px] font-black uppercase tracking-widest">
             {isCreative ? "🎵 Music Maker" : "🏗️ Stack the Toys!"}
@@ -11,20 +56,20 @@ return (
         </div>
       </div>
 
-      {/* Main Game Area - Adjusted to fit screen */}
-      <div className="flex-1 flex flex-col items-center justify-center p-2 gap-2 overflow-hidden">
+      {/* Main Container - This ensures everything fits without scrolling */}
+      <div className="flex-1 flex flex-col items-center justify-between p-4 overflow-hidden">
         
-        {/* THE STAGE - Height reduced from 400px to 300px so it fits */}
-        <div className="relative w-full max-w-[260px] h-[300px] bg-white/50 rounded-[2.5rem] border-b-[8px] border-slate-400 shadow-inner flex flex-col-reverse items-center overflow-visible">
+        {/* THE STAGE - Height reduced to 280px to ensure the button is never cut off */}
+        <div className="relative w-full max-w-[240px] h-[280px] bg-white/50 rounded-[2.5rem] border-b-[8px] border-slate-400 shadow-inner flex flex-col-reverse items-center overflow-visible">
           
-          {/* THE STAR */}
+          {/* THE STAR (Target for Module 5) */}
           {!isCreative && !isWin && (
             <div className="absolute top-2 animate-bounce">
               <span className="text-5xl drop-shadow-lg">⭐</span>
             </div>
           )}
 
-          {/* THE BLOCKS */}
+          {/* THE BLOCKS (Clones for Module 5 & 6) */}
           <div className="flex flex-col-reverse items-center mb-1">
             {blocks.map((block) => (
               <div 
@@ -37,23 +82,22 @@ return (
             ))}
           </div>
 
-          {/* Floor */}
           <div className="absolute bottom-[-8px] w-[110%] h-3 bg-slate-500 rounded-full" />
         </div>
 
-        {/* THE BIG ACTION BUTTON - Made smaller (max-w-160px) so it's fully visible */}
-        <div className="w-full max-w-[160px] pb-4 shrink-0">
+        {/* THE BIG RED BUTTON - Smaller and padded so it is ALWAYS visible */}
+        <div className="w-full flex justify-center pb-2 shrink-0">
           <button 
             onClick={dropBlock}
-            className="w-full aspect-square bg-red-500 rounded-full border-b-[8px] border-red-800 active:border-b-0 active:translate-y-1 transition-all flex flex-col items-center justify-center shadow-lg group"
+            className="w-24 h-24 bg-red-500 rounded-full border-b-[8px] border-red-800 active:border-b-0 active:translate-y-1 transition-all flex flex-col items-center justify-center shadow-lg"
           >
-            <span className="text-4xl group-active:scale-110 transition-transform">🚀</span>
-            <span className="text-white font-black text-sm mt-1 uppercase">PUSH!</span>
+            <span className="text-3xl">🚀</span>
+            <span className="text-white font-black text-[10px] uppercase">PUSH!</span>
           </button>
         </div>
       </div>
 
-      {/* Win Screen */}
+      {/* Win Overlay */}
       {isWin && (
         <div className="absolute inset-0 z-[100] bg-indigo-900/90 backdrop-blur-md flex flex-col items-center justify-center p-6 animate-in zoom-in">
           <div className="text-8xl mb-4 animate-bounce">🎉</div>
@@ -68,3 +112,4 @@ return (
       )}
     </div>
   );
+};
