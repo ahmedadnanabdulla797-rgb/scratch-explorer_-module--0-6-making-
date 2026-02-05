@@ -4,141 +4,110 @@ import { sounds } from '../services/sounds';
 type WorkshopMode = 'LOOP' | 'CONDITION' | 'LOGIC' | 'FINAL' | 'PLAYGROUND';
 
 export const LogicWorkshop: React.FC<{ mode: WorkshopMode, onWin?: () => void, isCompleted?: boolean, onNext?: () => void }> = ({ mode, onWin, isCompleted, onNext }) => {
-  const [spriteState, setSpriteState] = useState({ x: 0, y: 0, rotation: 0 });
-  const [itemsCollected, setItemsCollected] = useState<number>(0);
-  const [trail, setTrail] = useState<{x: number, y: number, id: number}[]>([]); // For Module 6 Art
+  const [blocks, setBlocks] = useState<{ id: number; y: number; color: string; emoji: string }[]>([]);
   const [isWin, setIsWin] = useState(false);
-  const stageSize = 340;
+  const isCreative = mode === 'PLAYGROUND';
 
-  const isModule6 = mode === 'PLAYGROUND';
+  const blockEmojis = ['📦', '🎁', '🧸', '🎨', '🧱', '🍭'];
+  const colors = ['bg-red-400', 'bg-blue-400', 'bg-yellow-400', 'bg-green-400', 'bg-purple-400'];
 
   const setup = useCallback(() => {
-    setSpriteState({ x: 0, y: 0, rotation: 0 });
-    setItemsCollected(0);
-    setTrail([]);
+    setBlocks([]);
     setIsWin(false);
   }, []);
 
   useEffect(() => { setup(); }, [setup]);
 
-  const moveManual = (dir: 'U' | 'D' | 'L' | 'R') => {
-    if (isWin && !isModule6) return;
-    
+  // MODULE 5: Logic - Adding a "Clone" (Block)
+  const dropBlock = () => {
+    if (isWin && !isCreative) return;
+
     sounds.playPop();
     
-    setSpriteState(p => {
-      let nx = p.x;
-      let ny = p.y;
-      let nr = p.rotation;
-      const step = 45;
+    const newBlock = {
+      id: Date.now(),
+      y: blocks.length * -60, // Stack them upwards
+      color: colors[blocks.length % colors.length],
+      emoji: blockEmojis[blocks.length % blockEmojis.length],
+    };
 
-      if (dir === 'U') { ny -= step; nr = 270; }
-      if (dir === 'D') { ny += step; nr = 90; }
-      if (dir === 'L') { nx -= step; nr = 180; }
-      if (dir === 'R') { nx += step; nr = 0; }
+    setBlocks(prev => [...prev, newBlock]);
 
-      nx = Math.max(-stageSize/2 + 40, Math.min(stageSize/2 - 40, nx));
-      ny = Math.max(-stageSize/2 + 40, Math.min(stageSize/2 - 40, ny));
-
-      // MODULE 6: CREATE ART (Add to trail)
-      if (isModule6) {
-        setTrail(prev => [{x: nx, y: ny, id: Date.now()}, ...prev].slice(0, 15));
-      }
-
-      // MODULE 5: COLLECT LOGIC (Collect 3 stars to open the house)
-      if (!isModule6 && Math.abs(nx - 0) < 40 && Math.abs(ny - 0) < 40) {
-          // If cat is in the center, count it as a "check"
-      }
-
-      return { ...p, x: nx, y: ny, rotation: nr };
-    });
+    // Win condition: Stack 5 blocks to reach the star
+    if (!isCreative && blocks.length >= 4) {
+      setTimeout(() => {
+        setIsWin(true);
+        sounds.playSuccess();
+        if (onWin) onWin();
+      }, 500);
+    }
   };
 
   return (
-    <div className={`h-full flex flex-col font-['Fredoka'] overflow-hidden ${isModule6 ? 'bg-indigo-50' : 'bg-slate-100'}`}>
+    <div className={`h-full flex flex-col font-['Fredoka'] overflow-hidden transition-colors duration-500 ${isCreative ? 'bg-orange-50' : 'bg-sky-100'}`}>
       
-      {/* 1. HEADER: Changes title based on Module */}
-      <div className={`${isModule6 ? 'bg-pink-500' : 'bg-indigo-900'} text-white px-4 py-3 flex items-center justify-between shadow-lg z-10`}>
-        <div className="flex items-center gap-2">
-          <span className="text-xl">{isModule6 ? '🎨' : '🗺️'}</span>
-          <h2 className="text-xs font-black uppercase tracking-widest">
-            {isModule6 ? 'Module 6: Creative Art' : 'Module 5: Logic Maze'}
-          </h2>
+      {/* Header */}
+      <div className="bg-[#1e1b4b] text-white px-4 py-3 flex items-center justify-between border-b-4 border-black/20">
+        <h2 className="text-xs font-black uppercase tracking-widest">
+            {isCreative ? "🎵 Music Maker" : "🏗️ Stack the Toys!"}
+        </h2>
+        <div className="text-xs font-black bg-white/20 px-3 py-1 rounded-full">
+            {isCreative ? "FREE PLAY" : `STACK: ${blocks.length}/5`}
         </div>
-        {isModule6 && <button onClick={setup} className="text-[10px] bg-white/20 px-2 py-1 rounded-lg font-bold">CLEAR CANVAS</button>}
       </div>
 
-      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+      <div className="flex-1 flex flex-col items-center justify-between p-6">
         
-        {/* 2. CONTROLS: Simplified for Tiny Fingers */}
-        <div className="w-full lg:w-[220px] p-4 flex flex-col items-center justify-center bg-white border-r-2 border-slate-200">
-          <div className="grid grid-cols-3 gap-2">
-            <div />
-            <button onClick={() => moveManual('U')} className="w-14 h-14 bg-slate-800 rounded-2xl text-2xl shadow-[0_5px_0_0_#000] active:translate-y-1 active:shadow-none">⬆️</button>
-            <div />
-            <button onClick={() => moveManual('L')} className="w-14 h-14 bg-slate-800 rounded-2xl text-2xl shadow-[0_5px_0_0_#000] active:translate-y-1 active:shadow-none">⬅️</button>
-            <button onClick={() => moveManual('D')} className="w-14 h-14 bg-slate-800 rounded-2xl text-2xl shadow-[0_5px_0_0_#000] active:translate-y-1 active:shadow-none">⬇️</button>
-            <button onClick={() => moveManual('R')} className="w-14 h-14 bg-slate-800 rounded-2xl text-2xl shadow-[0_5px_0_0_#000] active:translate-y-1 active:shadow-none">➡️</button>
-          </div>
-          <p className="mt-4 text-[8px] font-black opacity-40 uppercase">Control Kit</p>
-        </div>
-
-        {/* 3. STAGE: COMPLETELY DIFFERENT LOOKS */}
-        <div className="flex-1 relative flex items-center justify-center p-4 bg-slate-200">
+        {/* THE STAGE */}
+        <div className="relative w-full max-w-[300px] h-[400px] bg-white/50 rounded-[3rem] border-b-[12px] border-slate-400 shadow-inner flex flex-col-reverse items-center overflow-visible">
           
-          <div className={`relative w-[340px] h-[340px] rounded-[3rem] shadow-2xl overflow-hidden border-8 border-white
-            ${isModule6 ? 'bg-white' : 'bg-[url("https://www.transparenttextures.com/patterns/cubes.png")] bg-indigo-50'}`}>
-            
-            {/* MODULE 6: Rainbow Art Trail */}
-            {isModule6 && trail.map((dot, i) => (
-              <div key={dot.id} className="absolute w-12 h-12 rounded-full opacity-30"
-                style={{ 
-                  left: '50%', top: '50%', 
-                  transform: `translate(${dot.x-24}px, ${dot.y-24}px)`,
-                  backgroundColor: `hsl(${i * 40}, 70%, 60%)` 
-                }} 
-              />
-            ))}
-
-            {/* MODULE 5: The Maze Goal (Star) */}
-            {!isModule6 && (
-              <div className="absolute w-20 h-20 bg-yellow-400 rounded-full flex items-center justify-center animate-bounce shadow-lg"
-                style={{ left: '50%', top: '50%', transform: 'translate(-120px, -120px)' }}
-                onClick={() => { if(Math.abs(spriteState.x - (-80)) < 50) setIsWin(true); }}>
-                <span className="text-4xl">⭐</span>
-              </div>
-            )}
-
-            {/* THE SPRITE */}
-            <div className="absolute transition-all duration-300 ease-out z-20" 
-                 style={{ left: '50%', top: '50%', transform: `translate(${spriteState.x}px, ${spriteState.y}px) rotate(${spriteState.rotation}deg)` }}>
-              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-4xl shadow-xl border-2
-                ${isModule6 ? 'bg-pink-100 border-pink-400' : 'bg-white border-indigo-600'}`}>
-                {isModule6 ? '🎨' : '🐱'}
-              </div>
-            </div>
-
-            {/* MODULE 5: Obstacle (The Dog) */}
-            {!isModule6 && (
-              <div className="absolute text-4xl" style={{ left: '70%', top: '70%' }}>🐶</div>
-            )}
-
-          </div>
-
-          {/* Win Screen for Module 5 / Finish for Module 6 */}
-          {(isWin || (isModule6 && trail.length > 10)) && (
-            <div className="absolute inset-0 z-[100] bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center animate-in zoom-in">
-              <span className="text-8xl mb-4">{isModule6 ? '🖼️' : '🏆'}</span>
-              <h3 className="text-2xl font-black text-slate-800 uppercase">
-                {isModule6 ? 'BEAUTIFUL ART!' : 'MAZE MASTER!'}
-              </h3>
-              <button onClick={() => onNext?.()} className="mt-6 bg-indigo-600 text-white px-10 py-4 rounded-2xl font-black shadow-lg">
-                NEXT 🚀
-              </button>
+          {/* THE STAR (Target) */}
+          {!isCreative && !isWin && (
+            <div className="absolute top-0 animate-bounce">
+              <span className="text-6xl drop-shadow-lg">⭐</span>
             </div>
           )}
+
+          {/* THE BLOCKS (Clones) */}
+          {blocks.map((block, index) => (
+            <div 
+              key={block.id}
+              className={`${block.color} w-24 h-16 rounded-2xl flex items-center justify-center text-4xl shadow-[0_6px_0_0_rgba(0,0,0,0.2)] border-2 border-white/30 animate-in slide-in-from-top-20 duration-300`}
+              style={{ marginBottom: '4px' }}
+            >
+              {block.emoji}
+            </div>
+          ))}
+
+          {/* Floor */}
+          <div className="absolute bottom-[-12px] w-[120%] h-4 bg-slate-500 rounded-full" />
+        </div>
+
+        {/* THE BIG ACTION BUTTON */}
+        <div className="w-full max-w-[200px] pt-4">
+          <button 
+            onClick={dropBlock}
+            className="w-full aspect-square bg-red-500 rounded-full border-b-[10px] border-red-800 active:border-b-0 active:translate-y-2 transition-all flex flex-col items-center justify-center shadow-xl group"
+          >
+            <span className="text-5xl group-active:scale-110 transition-transform">🚀</span>
+            <span className="text-white font-black text-lg mt-2 uppercase tracking-tighter">PUSH!</span>
+          </button>
         </div>
       </div>
+
+      {/* Win Screen */}
+      {isWin && (
+        <div className="absolute inset-0 z-[100] bg-indigo-900/90 backdrop-blur-md flex flex-col items-center justify-center p-6 animate-in zoom-in">
+          <div className="text-9xl mb-6 animate-bounce">🎉</div>
+          <h3 className="text-4xl font-black text-white text-center uppercase leading-tight">Amazing!<br/>You Built it!</h3>
+          <button 
+            onClick={() => onNext?.()} 
+            className="mt-10 bg-emerald-500 text-white px-16 py-6 rounded-[2rem] font-black text-2xl shadow-[0_10px_0_0_#065f46] active:translate-y-2 transition-all"
+          >
+            NEXT LEVEL 🚀
+          </button>
+        </div>
+      )}
     </div>
   );
 };
